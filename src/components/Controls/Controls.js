@@ -5,18 +5,26 @@ export default class Controls extends Component {
     constructor(props) {
         super(props);
         this.changePaginationSize = this.changePaginationSize.bind(this);
+        this.searchTextChange = this.searchTextChange.bind(this);
     }
 
     render() {
         return <div className="controls-div columns">
-            <div className="column is-9">
+            <div className="column is-3">
                 Click on a card to expand the launch's information
+            </div>
+            <div className="column is-6">
+                <input type="text" value={this.props.searchValue} onChange={this.searchTextChange} pleaceholder="Filter for launch" />
             </div>
             <div className="column is-3">
                 <span>Results per page: </span>
                 {this.renderPaginationSizeMenu()}
             </div>
         </div>
+    }
+
+    searchTextChange(event) {
+        this.props.updateSearchText(event.target.value);
     }
 
     renderPaginationSizeMenu() {

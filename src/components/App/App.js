@@ -18,11 +18,13 @@ export default class App extends Component {
             selectedVideo: null,
             paginationSizes: [5, 10, 20],
             paginationSize: 10,
-            page: 1
+            page: 1,
+            searchValue: ""
         }
         this.setSelectedVideo = this.setSelectedVideo.bind(this);
         this.updatePageNumber = this.updatePageNumber.bind(this);
         this.updatePaginationSize = this.updatePaginationSize.bind(this);
+        this.updateSearchText = this.updateSearchText.bind(this);
     }
 
     componentDidMount() {
@@ -42,7 +44,7 @@ export default class App extends Component {
     }
 
     render() {
-        const { data, selectedVideo, paginationSize, page, dataLength, paginationSizes } = this.state;
+        const { data, selectedVideo, paginationSize, page, dataLength, paginationSizes, searchValue } = this.state;
 
         let content;
 
@@ -51,9 +53,9 @@ export default class App extends Component {
         } else if (data === "ERROR") {
             content = <p>ERROR</p>;
         } else {
-            const shownData = this.getShownData(data, paginationSize, page);
+            const shownData = this.getShownData(data, paginationSize, page, searchValue);
             content = <div className="content-container">
-                <Controls paginationSize={paginationSize} updatePaginationSize={this.updatePaginationSize} paginationSizes={paginationSizes} />
+                <Controls paginationSize={paginationSize} updatePaginationSize={this.updatePaginationSize} paginationSizes={paginationSizes} searchValue={searchValue} updateSearchText={this.updateSearchText} />
                 <div className="level video-cards-container">
                     <Cards data={shownData} selectedVideo={selectedVideo} setSelectedVideo={this.setSelectedVideo} />
                     <Video selectedVideo={selectedVideo} setSelectedVideo={this.setSelectedVideo} />
@@ -71,11 +73,16 @@ export default class App extends Component {
         </div>
     }
 
-    getShownData(data, paginationSize, page) {
+    getShownData(data, paginationSize, page, searchValue) {
         const startIndex = (page - 1) * paginationSize;
         const endIndex = Math.min(page * paginationSize, data.length);
 
-        return data.slice(startIndex, endIndex);
+        console.log(data)
+
+        return data.filter((entry) => {
+            console.log(entry)
+            return entry.mission_name.match(searchValue) || entry.launch_site.site_name_long.match(searchValue) || entry.rocket.rocket_name.match(searchValue);
+        }).slice(startIndex, endIndex);
     }
 
     setSelectedVideo(selectedVideo) {
@@ -88,5 +95,9 @@ export default class App extends Component {
 
     updatePaginationSize(size) {
         this.setState({ paginationSize: size, page: 1 });
+    }
+
+    updateSearchText(newText) {
+        this.setState({ searchValue: newText });
     }
 }
